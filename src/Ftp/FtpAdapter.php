@@ -540,7 +540,11 @@ class FtpAdapter implements FilesystemAdapter
             $path = $this->escapePath($path);
         }
 
-        return ftp_rawlist($connection, $options . ' ' . $path, stripos($options, 'R') !== false) ?: [];
+        $list = ftp_rawlist($connection, $options . ' ' . $path, stripos($options, 'R') !== false);
+        if ($list === false) {
+            $list = ftp_rawlist($connection, $path, stripos($options, 'R') !== false);
+        }
+        return $list ?: [];
     }
 
     public function move(string $source, string $destination, Config $config): void
